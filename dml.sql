@@ -66,7 +66,12 @@ order by stock desc
 limit 5;
 
 --                         3.3 Ejercicios Complejos 
+
 -- Calcular el ticket promedio de compra en la tienda.
+-- ticket promedio = total ingresos/numero de pedidos 
+select round(sum(total) / count(id),2) as ticket_promedio 
+from pedidos
+where estado in ('envidado', 'entregado');
 
 -- Listar los clientes que han realizado más de 5 pedidos y el monto total que han gastado.
 select u.nombre as clientes,
@@ -92,10 +97,13 @@ order by monto_gastado desc;
  group by c.id 
  order by total_vendidos desc
  limit 3;
+ 
 -- Mostrar la cantidad de ventas realizadas por cada método de pago en los últimos 6 meses.
 select pa.metodo_pago as metodos_de_pago,
 count(p.id) as total_pedidos 
 from pedidos p
 join pagos pa on pa.pedido_id = p.id 
 where p.fecha_pedido >= now()-interval '6 months'
-group by pa.metodo_pago;
+and pa.estado = 'Completado' --  para verificar que ya se pago 
+group by pa.metodo_pago
+order by total_pedidos desc;
